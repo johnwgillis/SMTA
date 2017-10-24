@@ -7,13 +7,14 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_system.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
 
 /* Can run 'make menuconfig' to choose the GPIO to blink,
    or you can edit the following line and set a number here.
 */
-#define BLINK_GPIO GPIO_NUM_23 
+#define BLINK_GPIO GPIO_NUM_22 
 #define GPIO_OUTPUT_PIN_SEL  ( 1 << BLINK_GPIO ) 
 
 void blink_task(void *pvParameter)
@@ -27,6 +28,7 @@ void blink_task(void *pvParameter)
     gpio_pad_select_gpio(BLINK_GPIO);
     /* Set the GPIO as a push/pull output */
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+
     while(1) {
         /* Blink off (output low) */
         gpio_set_level(BLINK_GPIO, 0);
@@ -39,19 +41,21 @@ void blink_task(void *pvParameter)
 
 void app_main()
 {
-    gpio_config_t io_conf;
-    //disable interrupt
-    io_conf.intr_type = GPIO_INTR_DISABLE;
-    //set as output mode
-    io_conf.mode = GPIO_MODE_OUTPUT;
-    //bit mask of the pins that you want to set,e.g.GPIO18/19
-    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
-    //disable pull-down mode
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    //disable pull-up mode
-    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-    //configure GPIO with the given settings
-    gpio_config(&io_conf);
+    //nvs_flash_init();
+
+    // gpio_config_t io_conf;
+    // //disable interrupt
+    // io_conf.intr_type = GPIO_INTR_DISABLE;
+    // //set as output mode
+    // io_conf.mode = GPIO_MODE_OUTPUT;
+    // //bit mask of the pins that you want to set,e.g.GPIO18/19
+    // io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    // //disable pull-down mode
+    // io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    // //disable pull-up mode
+    // io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    // //configure GPIO with the given settings
+    // gpio_config(&io_conf);
 
 
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
